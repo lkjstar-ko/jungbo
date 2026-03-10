@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-IoT Smart System Simulation</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --primary: #4a90e2;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+        }
+
+        body { font-family: 'Malgun Gothic', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .iot-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .iot-card:hover { transform: translateY(-5px); }
+        .iot-card h2 { margin-top: 0; font-size: 1.2rem; color: #333; display: flex; align-items: center; gap: 10px; }
+        
+        /* 센서 조작부 */
+        .control-group { margin: 20px 0; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        .data-display { font-weight: bold; font-size: 1.1rem; color: var(--primary); }
+
+        /* 상태 표시기 */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+            background: #95a5a6;
+            margin-top: 10px;
+        }
+
+        /* 각 테마별 스타일 */
+        .home-security.active { border: 2px solid var(--danger); }
+        .farm.active { border: 2px solid var(--success); }
+        .health.active { border: 2px solid var(--warning); }
+
+        .visual-indicator {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 10px 0;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🚀 미래를 여는 IoT 실시간 시뮬레이션</h1>
+    <p>데이터 수집 → 분석 → 자동 제어의 과정을 직접 확인해보세요.</p>
+</div>
+
+<div class="dashboard">
+    <div class="iot-card home-security" id="card-security">
+        <h2>🔒 스마트 홈 보안</h2>
+        <p>현관문 센서가 움직임을 감지합니다.</p>
+        <div class="visual-indicator" id="icon-security">🏠</div>
+        <div class="control-group">
+            <label>감지 거리 (m): <span class="data-display" id="val-security">5</span>m</label>
+            <input type="range" id="range-security" min="0" max="10" value="5">
+        </div>
+        <div class="status-badge" id="badge-security">안전함</div>
+        <p><small>* 2m 이내 접근 시 경보 발생</small></p>
+    </div>
+
+    <div class="iot-card farm" id="card-farm">
+        <h2>🌱 스마트 팜 (토양 수분)</h2>
+        <p>토양의 수분을 체크하여 물을 줍니다.</p>
+        <div class="visual-indicator" id="icon-farm">🌾</div>
+        <div class="control-group">
+            <label>토양 수분량: <span class="data-display" id="val-farm">45</span>%</label>
+            <input type="range" id="range-farm" min="0" max="100" value="45">
+        </div>
+        <div class="status-badge" id="badge-farm">정상 유지</div>
+        <p><small>* 30% 미만일 때 워터펌프 가동</small></p>
+    </div>
+
+    <div class="iot-card health" id="card-health">
+        <h2>❤️ 스마트 헬스케어</h2>
+        <p>착용자의 심박수를 실시간 모니터링합니다.</p>
+        <div class="visual-indicator" id="icon-health">😊</div>
+        <div class="control-group">
+            <label>심박수 (BPM): <span class="data-display" id="val-health">75</span></label>
+            <input type="range" id="range-health" min="40" max="180" value="75">
+        </div>
+        <div class="status-badge" id="badge-health">정상</div>
+        <p><small>* 140BPM 이상 시 긴급 연락망 가동</small></p>
+    </div>
+</div>
+
+<script>
+    // 1. 보안 시스템 로직
+    const rangeSec = document.getElementById('range-security');
+    rangeSec.addEventListener('input', (e) => {
+        const val = e.target.value;
+        document.getElementById('val-security').innerText = val;
+        const badge = document.getElementById('badge-security');
+        const icon = document.getElementById('icon-security');
+        
+        if(val <= 2) {
+            badge.innerText = "🚨 외부인 침입 경보!";
+            badge.style.background = "#e74c3c";
+            icon.innerText = "📢";
+        } else {
+            badge.innerText = "안전함";
+            badge.style.background = "#95a5a6";
+            icon.innerText = "🏠";
+        }
+    });
+
+    // 2. 스마트 팜 로직
+    const rangeFarm = document.getElementById('range-farm');
+    rangeFarm.addEventListener('input', (e) => {
+        const val = e.target.value;
+        document.getElementById('val-farm').innerText = val;
+        const badge = document.getElementById('badge-farm');
+        const icon = document.getElementById('icon-farm');
+        
+        if(val < 30) {
+            badge.innerText = "💧 물 공급 중...";
+            badge.style.background = "#3498db";
+            icon.innerText = "🚿";
+        } else {
+            badge.innerText = "정상 유지";
+            badge.style.background = "#2ecc71";
+            icon.innerText = "🌾";
+        }
+    });
+
+    // 3. 헬스케어 로직
+    const rangeHealth = document.getElementById('range-health');
+    rangeHealth.addEventListener('input', (e) => {
+        const val = e.target.value;
+        document.getElementById('val-health').innerText = val;
+        const badge = document.getElementById('badge-health');
+        const icon = document.getElementById('icon-health');
+        
+        if(val >= 140) {
+            badge.innerText = "⚠️ 위험: 고심박수";
+            badge.style.background = "#f1c40f";
+            icon.innerText = "🏃";
+        } else if(val < 50) {
+            badge.innerText = "⚠️ 위험: 저심박수";
+            badge.style.background = "#f1c40f";
+            icon.innerText = "🛌";
+        } else {
+            badge.innerText = "정상";
+            badge.style.background = "#2ecc71";
+            icon.innerText = "😊";
+        }
+    });
+</script>
+
+</body>
+</html>
